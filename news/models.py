@@ -49,6 +49,9 @@ class Post(models.Model):
     article_text = models.TextField()
     rate = models.IntegerField(default=0)
 
+    def __str__(self):
+        return self.head_name
+        
     def like(self):
         self.rate += 1
         self.save()
