@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Sum
 from django.db.models.functions import Coalesce
-
+from django.urls import reverse
 
 article = '01'
 news = '02'
@@ -32,17 +32,20 @@ class Author(models.Model):
             + author_post_comment_rating['comments_rating_sum']
         self.save()
 
+    def __str__(self):
+        return self.user.username
 
 class Category(models.Model):
 
     name_category = models.CharField(max_length=250, unique=True)
-
+    def __str__(self):
+        return self.name_category
 
 class Post(models.Model):
 
     objects = None
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
-    type = models.CharField(max_length=2, choices=TYPE, default=article)
+    type = models.CharField(max_length=2, choices=TYPE, default='02')
     time_in = models.DateTimeField(auto_now_add=True)
     category = models.ManyToManyField(Category, through="PostCategory")
     head_name = models.CharField(max_length=250, unique=True)
@@ -51,7 +54,10 @@ class Post(models.Model):
 
     def __str__(self):
         return self.head_name
-        
+
+    def get_absolute_url(self):
+        return reverse('post_detail', args=[str(self.id)])
+
     def like(self):
         self.rate += 1
         self.save()

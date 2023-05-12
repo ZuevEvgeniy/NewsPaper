@@ -2,35 +2,23 @@
 {% load custom_filters %}
 {% load custom_tags %}
 {% block title %}
-News
+News Search
 {% endblock title %}
-
 {% block content %}
-   <h1>Все публикации</h1>
-   <h1>Всего публикаций: {{news|length}}</h1>
-  <!-- Используем переданную из представления переменную time_now
-   и применяем к ней фильтр date. По назначению этот фильтр очень похож
-   на метод strftime у объекта datetime в Python — вывод времени
-   в указанном формате. -->
-   <h3>{{ time_now|date:'d M Y' }}</h3>
-   <!--<h3>{% current_time '%d %b %Y' %}</h3>-->
-   <!-- Если в переменной next_sale будет None,
-   то выведется указанный в фильтре текст -->
-   <h3> {{ new_post|default_if_none:"Мы сообщим о новых новостях!" }} </h3>
-
-    <!--{# Добавляем форму, которая объединяет набор полей, которые будут отправляться в запросе #}
-   <form action="" method="get">
+<h1>Все публикации</h1>
+<h1>Всего найдено публикаций: {{news|length}}</h1>
+ <form action="" method="get">
        {# Переменная, которую мы передали через контекст, может сгенерировать нам форму с полями #}
        {{ filterset.form.as_p }}
        {# Добавим кнопку отправки данных формы #}
        <input type="submit" value="Найти" />
-   </form>-->
+   </form>
    <hr>
    {% if news %}
        <table>
            <tr>
                <!--<td>Автор</td>-->
-               <td>Тип</td>
+               <!--<td>Тип</td>-->
                <td>Заголовок</td>
                <td>Дата публикации</td>
                <!--<td>Категория</td>-->
@@ -51,7 +39,6 @@ News
                 полям объекта модели. Например, здесь мы выводим имя,
                 в следующем столбце описание, и т.д.  -->
                <!--<td>{{ post.author.user.username|censor }}</td>-->
-               <td>{{ post.get_type_display }}</td>
                <!--<td>{{ post.type }}</td>-->
                <td>{{ post.head_name|censor }}</td>
                <td>{{ post.time_in|date:'d M Y' }}</td>
@@ -92,5 +79,3 @@ News
    {% endif %}
 
 {% endblock content %}
-
-
