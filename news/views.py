@@ -1,4 +1,3 @@
-#from django.shortcuts import render
 # Create your views here.
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
@@ -6,19 +5,18 @@ from django.views import View
 from django.views.generic import (
     ListView, DetailView, CreateView, UpdateView, DeleteView
 )
-from django.contrib.auth.mixins import PermissionRequiredMixin
 from datetime import datetime
 from .models import Post
 from .filters import NewsFilter
 from .forms import PostForm
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.decorators import method_decorator
-from django.views.generic import TemplateView
 from django.contrib.auth.mixins import PermissionRequiredMixin
+
 
 class MyView(PermissionRequiredMixin, View):
     permission_required = ('<app>.<action>_<model>',
                            '<app>.<action>_<model>')
+
 
 class NewsList(ListView):
     # Указываем модель, объекты которой мы будем выводить
@@ -34,7 +32,8 @@ class NewsList(ListView):
 
     # Метод get_context_data позволяет нам изменить набор данных,
     # который будет передан в шаблон.
-    paginate_by = 10 # вот так мы можем указать количество записей на странице то есть на сколько делить колличесвто записей
+    paginate_by = 10  # вот так мы можем указать количество записей на странице то есть на сколько делить
+    # олличесвто записей
 
     # Переопределяем функцию получения списка товаров
     #def get_queryset(self):
@@ -62,7 +61,10 @@ class NewsList(ListView):
       #  context['new_post'] = "Свежие новости сегодня!"
        # context['filterset'] = self.filterset
       #  return context
-
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_not_authors'] = not self.request.user.groups.filter(name='authors').exists()
+        return context
 class PostDetail(DetailView):
     # Модель всё та же, но мы хотим получать информацию по отдельному post
     model = Post
@@ -76,7 +78,7 @@ class PostDetail(DetailView):
 class PostCreate(PermissionRequiredMixin,CreateView):
     permission_required = ('news.add_post',)
 
-    // customize form view
+    ##// customize form view
     # Указываем нашу разработанную форму
     form_class = PostForm
     # модель товаров
@@ -99,20 +101,21 @@ class PostCreate(PermissionRequiredMixin,CreateView):
 class PostUpdate(PermissionRequiredMixin,UpdateView): ##данная форма еще и авторизацию просит
     permission_required = ('news.change_post',)
 
-    // customize form view
+    ##// customize form view
     # Указываем нашу разработанную форму
     form_class = PostForm
     # модель товаров
     model = Post
     # и новый шаблон, в котором используется форма.
     template_name = 'post_edit.html'
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['is_not_authors'] = not self.request.user.groups.filter(name='authors').exists()
         return context
-
 @method_decorator(login_required, name='dispatch')
-class PostDelete(DeleteView):
+class PostDelete(PermissionRequiredMixin,DeleteView):
+    permission_required = ('news.delete_post',)
     model = Post
     template_name = 'post_delete.html'
     success_url = reverse_lazy('news_list')
@@ -120,7 +123,6 @@ class PostDelete(DeleteView):
         context = super().get_context_data(**kwargs)
         context['is_not_authors'] = not self.request.user.groups.filter(name='authors').exists()
         return context
-
 class PostSearch(ListView):
     model = Post
     ordering = '-time_in'
@@ -151,4 +153,3 @@ class PostSearch(ListView):
         context['new_post'] = "Свежие новости сегодня!"
         context['filterset'] = self.filterset
         return context
-

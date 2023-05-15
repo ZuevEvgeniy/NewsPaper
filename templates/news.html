@@ -13,6 +13,9 @@ News
    на метод strftime у объекта datetime в Python — вывод времени
    в указанном формате. -->
    <h3>{{ time_now|date:'d M Y' }}</h3>
+   {% if is_not_authors %}
+   <button> <a href="http://127.0.0.1:8000/sign/upgrade/"> Cтать автором!</a> </button>
+   {% endif %}
    <!--<h3>{% current_time '%d %b %Y' %}</h3>-->
    <!-- Если в переменной next_sale будет None,
    то выведется указанный в фильтре текст -->
