@@ -1,0 +1,28 @@
+{% extends 'flatpages/default.html' %}
+{% load custom_filters %}
+{% load custom_tags %}
+<!-- Название у нас будет Product -->
+{% block title %}
+Category
+{% endblock title %}
+
+<!-- В контенте на странице мы выводим сам товар, идентификатор которого был передан в url -->
+{% block content %}
+
+{%if category.id%}
+<div class="subscribe">
+  <em>
+    Subscribe to
+    <strong>{{category}}?</strong>
+  </em>
+
+<a href="{#% url 'news:subscribe' category.id %#}" class ="button
+button-online">
+  Subscribe
+</a>
+</div>
+{% endif %}
+
+{% include "news.html" %}
+
+{% endblock content %}

@@ -6,13 +6,18 @@ from django.views.generic import (
     ListView, DetailView, CreateView, UpdateView, DeleteView
 )
 from datetime import datetime
-from .models import Post
+from .models import Post, Category
 from .filters import NewsFilter
 from .forms import PostForm
 from django.utils.decorators import method_decorator
 from django.contrib.auth.mixins import PermissionRequiredMixin
-
-
+from django.shortcuts import get_object_or_404
+from django.core.mail import send_mail
+from django.shortcuts import render, reverse, redirect
+from django.template.loader import render_to_string
+from django.core.mail import EmailMultiAlternatives
+import logging
+from pydoc import resolve
 class MyView(PermissionRequiredMixin, View):
     permission_required = ('<app>.<action>_<model>',
                            '<app>.<action>_<model>')
@@ -95,7 +100,7 @@ class PostCreate(PermissionRequiredMixin,CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['is_not_authors'] = not self.request.user.groups.filter(name='authors').exists()
-        return context
+
 @method_decorator(login_required, name='dispatch')
 #(login_url = '/admin/')
 class PostUpdate(PermissionRequiredMixin,UpdateView): ##данная форма еще и авторизацию просит
@@ -152,4 +157,28 @@ class PostSearch(ListView):
         # чтобы на её примере рассмотреть работу ещё одного фильтра.
         context['new_post'] = "Свежие новости сегодня!"
         context['filterset'] = self.filterset
+        return context
+
+@login_required
+def subscribe(request, pk):
+    user = request.user
+    category = Category.objects.get(id=pk)
+    category.subscribers.add(user)
+    message = "Вы в рассылке"
+    return render(request, 'subscribe.html', {'category': category, 'message' : message})
+
+class CategoryListView (NewsList):
+    model= Post
+    template_name = "categories.html"
+    context_object_name = "category_news_list"
+
+    def get_queryset(self):
+        self.category=get_object_or_404(Category,id= self.kwargs ['pk'])
+        queryset=Post.objects.filter(category=self.category).order_by('-time_in')
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["is_not_subscriber"]= self.request. user not in self.category.subscribers.all()
+        context['category']=self.category
         return context
