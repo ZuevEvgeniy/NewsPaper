@@ -2,10 +2,10 @@
 
 {% block content %}
 <h1>Пост</h1>
+<hr>
 {% if is_not_authors %}
 <button> <a href="http://127.0.0.1:8000/sign/upgrade/"> Cтать автором!</a> </button>
 {% endif %}
-<hr>
 <form action="" method="post">
     {% csrf_token %}
     {{ form.as_p }}

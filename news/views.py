@@ -14,8 +14,6 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.core.mail import send_mail
 from django.shortcuts import render, reverse, redirect
-from django.template.loader import render_to_string
-from django.core.mail import EmailMultiAlternatives
 import logging
 from pydoc import resolve
 class MyView(PermissionRequiredMixin, View):
@@ -164,7 +162,7 @@ def subscribe(request, pk):
     user = request.user
     category = Category.objects.get(id=pk)
     category.subscribers.add(user)
-    message = "Вы в рассылке"
+    message = "Вы в рассылке категории"
     return render(request, 'subscribe.html', {'category': category, 'message' : message})
 
 class CategoryListView (NewsList):
@@ -173,12 +171,13 @@ class CategoryListView (NewsList):
     context_object_name = "category_news_list"
 
     def get_queryset(self):
-        self.category=get_object_or_404(Category,id= self.kwargs ['pk'])
+        self.category = get_object_or_404(Category,id= self.kwargs ['pk'])
         queryset=Post.objects.filter(category=self.category).order_by('-time_in')
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["is_not_subscriber"]= self.request. user not in self.category.subscribers.all()
+        context["is_not_subscriber"] = self.request.user not in self.category.subscribers.all()
         context['category']=self.category
         return context
+
