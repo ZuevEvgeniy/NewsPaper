@@ -13,6 +13,8 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
+from django.http import HttpResponse
+from .tasks import hello
 
 class MyView(PermissionRequiredMixin, View):
     permission_required = ('<app>.<action>_<model>',
@@ -129,3 +131,7 @@ class CategoryListView (NewsList):
         context['category']=self.category
         return context
 
+class IndexView(View):
+    def get(self, request):
+        hello.delay()
+        return HttpResponse('Hello!')
