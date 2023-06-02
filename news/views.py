@@ -14,7 +14,7 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.http import HttpResponse
-from .tasks import hello, printer
+from .tasks import hello, send_email_post
 
 class MyView(PermissionRequiredMixin, View):
     permission_required = ('<app>.<action>_<model>',
@@ -58,6 +58,9 @@ class PostCreate(PermissionRequiredMixin,CreateView):
         context = super().get_context_data(**kwargs)
         context['is_not_authors'] = not self.request.user.groups.filter(name='authors').exists()
         return context
+
+    def send_email(self):
+        send_email_post.delay()
 
 
 @method_decorator(login_required, name='dispatch')
@@ -136,6 +139,5 @@ class CategoryListView (NewsList):
 
 class IndexView(View):
     def get(self, request):
-        printer.apply_async([10], countdown = 5)
         hello.delay()
         return HttpResponse('Hello!')
