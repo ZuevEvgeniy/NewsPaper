@@ -15,5 +15,5 @@ urlpatterns = [
    path('search/', PostSearch.as_view(), name='post_search'),
    path('categories/<int:pk>', CategoryListView.as_view(), name='category_list'),
    path('categories/<int:pk>/subscribe', subscribe, name='subscribe'),
-   path('test/', IndexView.as_view()),
+   path('hello/', IndexView.as_view()),
 ]

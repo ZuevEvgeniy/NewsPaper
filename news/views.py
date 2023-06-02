@@ -14,7 +14,7 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.http import HttpResponse
-from .tasks import hello
+from .tasks import hello, printer
 
 class MyView(PermissionRequiredMixin, View):
     permission_required = ('<app>.<action>_<model>',
@@ -120,10 +120,12 @@ class CategoryListView (NewsList):
     template_name = "categories.html"
     context_object_name = "category_news_list"
 
+
     def get_queryset(self):
         self.category = get_object_or_404(Category,id= self.kwargs ['pk'])
         queryset=Post.objects.filter(category=self.category).order_by('-time_in')
         return queryset
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -131,7 +133,9 @@ class CategoryListView (NewsList):
         context['category']=self.category
         return context
 
+
 class IndexView(View):
     def get(self, request):
+        printer.apply_async([10], countdown = 5)
         hello.delay()
         return HttpResponse('Hello!')
