@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.db.models import Sum
 from django.db.models.functions import Coalesce
 from django.urls import reverse
+from django.core.cache import cache
 
 article = '01'
 news = '02'
@@ -75,6 +76,11 @@ class Post(models.Model):
         preview = article_text[0:124]
         points = "..."
         return preview + points
+
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs) # сначала вызываем метод родителя, чтобы объект сохранился
+        cache.delete(f'post-{self.pk}') # затем удаляем его из кэша, чтобы сбросить его
 
 
 class PostCategory(models.Model):
