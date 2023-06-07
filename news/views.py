@@ -14,7 +14,7 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.http import HttpResponse
-from .tasks import hello, send_email_post
+from .tasks import hello, send_email_post, printer
 from django.core.cache import cache
 
 
@@ -66,15 +66,13 @@ class PostCreate(PermissionRequiredMixin,CreateView):
         if self.request.path == "/news/article/create/":
             post.type="01"
         post.save()
+        send_email_post.delay(post.pk)
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['is_not_authors'] = not self.request.user.groups.filter(name='authors').exists()
         return context
-
-    def send_email(self):
-        send_email_post.delay()
 
 
 @method_decorator(login_required, name='dispatch')
@@ -153,5 +151,6 @@ class CategoryListView (NewsList):
 
 class IndexView(View):
     def get(self, request):
+        printer.delay(10)
         hello.delay()
         return HttpResponse('Hello!')
