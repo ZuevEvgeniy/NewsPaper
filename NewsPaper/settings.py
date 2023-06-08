@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     # ... include the providers you want to enable:
     'allauth.socialaccount.providers.google',
-    'django_apscheduler',
+    #'django_apscheduler',
     'redis',
     'celery',
 ]
@@ -172,8 +172,8 @@ SITE_URL = "http://127.0.0.1:8000"
 DEFAULT_FROM_EMAIL = 'Ev.Al.Zuev@yandex.ru'
 APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
 APSCHEDULER_RUN_NOW_TIMEOUT = 25
-CELERY_BROKER_URL = 'redis://:Mj4nVMfz2OL84sMVhkB1AKUxocygU9WK@redis-14519.c17.us-east-1-4.ec2.cloud.redislabs.com:14519'
-CELERY_RESULT_BACKEND = 'redis://:Mj4nVMfz2OL84sMVhkB1AKUxocygU9WK@redis-14519.c17.us-east-1-4.ec2.cloud.redislabs.com:14519'
+CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
