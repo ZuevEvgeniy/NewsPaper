@@ -46,14 +46,14 @@ def weekly_sending():
     msg.attach_alternative(html_contetnt, 'text/html')
     msg.send()
 
-    return HttpResponse("Weekly news sent successfully!")
+    #return HttpResponse("Weekly news sent successfully!")
 
 
 @shared_task
 def send_email_post(pk):
     post = Post.objects.get(pk=pk)
     categories = post.category.all()
-    title = post.title
+    title = post.head_name
     subscribers_emails = []
     for category in categories:
         subscribers_users = category.subscribers.all()
@@ -77,4 +77,4 @@ def send_email_post(pk):
     )
     msg.attach_alternative(html_content, "text/html")
     msg.send()
-    return HttpResponse("New news sent successfully!")
+    #return HttpResponse("New news sent successfully!")
